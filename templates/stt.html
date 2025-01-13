@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deaf Communication App</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        header {
+            background: linear-gradient(90deg, #0078d7, #005a9e);
+            color: white;
+            padding: 30px 0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #eef6ff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-top: 20px;
+        }
+
+        .file-input {
+            margin-bottom: 20px;
+        }
+
+        .file-input input,
+        .file-input textarea {
+            padding: 12px;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .file-input button {
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #0078d7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .file-input button:hover {
+            background-color: #005a9e;
+        }
+
+        .result {
+            margin-top: 30px;
+        }
+
+        .result pre {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1.2em;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: left;
+        }
+
+        .btn-back {
+            background-color: #0078d7;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1.2em;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            background-color: #005a9e;
+        }
+
+        footer {
+            background: #0078d7;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 15.5%;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .file-input button {
+                font-size: 1em;
+            }
+
+            .btn-back {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Deaf Communication App</h1>
+    </header>
+
+    <div class="container">
+        <!-- Convert Speech to Text -->
+        <h2>Convert Speech to Text</h2>
+        <form id="audio-form" onsubmit="uploadAudio(event)">
+            <div class="file-input">
+                <input type="file" id="audio-file" name="audio" accept="audio/*" required>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+
+        <div class="result" id="result">
+            <!-- The recognized text will be displayed here -->
+        </div>
+
+        
+    </div>
+    <a href="/index" class="btn-back">Back to Home</a>
+    <footer>
+        <p>&copy; 2025 Accessible App. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Function to handle audio file upload for speech-to-text
+        async function uploadAudio(event) {
+            event.preventDefault();  // Prevent the form from reloading the page
+
+            const audioFile = document.getElementById('audio-file').files[0];
+            if (!audioFile) {
+                alert("Please select an audio file.");
+                return;
+            }
+
+            // Prepare the form data for the audio file upload
+            const formData = new FormData();
+            formData.append('audio', audioFile);
+
+            // Send the audio file to the backend
+            try {
+                const response = await fetch('/speech_to_text_fun', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Handle the response from the backend
+                const result = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('result').innerHTML = `
+                        <h3>Recognized Text:</h3>
+                        <pre>${result.text}</pre>
+                    `;
+                } else {
+                    document.getElementById('result').innerHTML = `
+                        <h3>Error</h3>
+                        <p>${result.error}</p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error uploading audio:', error);
+                document.getElementById('result').innerHTML = `
+                    <h3>Error</h3>
+                    <p>An error occurred while uploading the audio. Please try again.</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

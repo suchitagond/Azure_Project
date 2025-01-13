@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Speech</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        header {
+            background: linear-gradient(90deg, #0078d7, #005a9e);
+            color: white;
+            padding: 30px 0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        main {
+            padding: 40px 20px;
+        }
+
+        .custom-tts {
+            background: #eef6ff;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 1.2em;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin: 10px 0;
+            font-size: 1.2em;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #0078d7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #005a9e;
+        }
+
+        .btn-back {
+            background-color: #0078d7;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1.2em;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back:hover {
+            background-color: #005a9e;
+        }
+
+        footer {
+            background: #0078d7;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 65px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .custom-tts {
+                width: 90%;
+                padding: 15px;
+            }
+
+            button, .btn-back {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Text-to-Speech</h1>
+    </header>
+    <main>
+        <div class="custom-tts">
+            <form id="custom-tts-form">
+                <label for="custom-text"><strong>Enter custom text to read aloud:</strong></label><br>
+                <textarea id="custom-text" placeholder="Type text here..."></textarea><br>
+                <button type="submit">Read Aloud</button>
+            </form>
+        </div>
+
+        <a href="/index" class="btn-back">Back to Home</a>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Accessible App. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const customTTSForm = document.getElementById("custom-tts-form");
+
+            customTTSForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const customText = document.getElementById("custom-text").value.trim();
+
+                if (!customText) {
+                    alert("Please enter text to read aloud.");
+                    return;
+                }
+
+                try {
+                    const response = await fetch("/api/custom_text_to_speech", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ text: customText }),
+                    });
+                    const data = await response.json();
+
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        alert("Text read aloud successfully.");
+                    }
+                } catch (error) {
+                    alert("An error occurred while processing the text-to-speech request.");
+                    console.error(error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

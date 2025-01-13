@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Translation</title>
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            text-align: center;
+        }
+
+        header {
+            background: linear-gradient(90deg, #0078d7, #005a9e);
+            color: white;
+            padding: 30px 0;
+            margin-top: 0%;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #eef6ff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-top: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        textarea, input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #translatedText {
+            padding: 10px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            border: 1px solid #bdc3c7;
+            text-align: left;
+            font-size: 1.1em;
+        }
+
+        .btn-back {
+            background-color: #0078d7;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1.2em;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            background-color: #005a9e;
+        }
+
+        footer {
+            background: #0078d7;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            button {
+                font-size: 1em;
+            }
+
+            .btn-back {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Text Translation App</h1>
+    </header>
+
+    <div class="container">
+        <!-- Translation Form -->
+        <h2>Translate Your Text</h2>
+        <form id="translationForm" method="POST" action="/api/translate_text">
+            <label for="text">Enter text to translate:</label>
+            <textarea id="text" name="text" rows="4" placeholder="Enter your text here"></textarea>
+        
+            <label for="targetLanguage">Target Language (e.g., en, es, fr):</label>
+            <input id="targetLanguage" name="targetLanguage" type="text" placeholder="Enter target language code (e.g., en, es, fr)">
+        
+            <button type="submit" id="translateButton">Translate</button>
+        </form>
+        
+        <h2>Translation Result:</h2>
+        <p id="translatedText">Your translation will appear here.</p>
+
+        
+    </div>
+    <a href="/index" class="btn-back">Back to Home</a>
+    <footer>
+        <p>&copy; 2025 Accessible App. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // JavaScript Code
+        document.getElementById("translationForm").addEventListener("submit", async (event) => {
+            event.preventDefault();  // Prevent the default form submission
+    
+            const text = document.getElementById("text").value;
+            const targetLanguage = document.getElementById("targetLanguage").value;
+        
+            if (!text || !targetLanguage) {
+                document.getElementById("translatedText").innerText = "Please enter text and target language.";
+                return;
+            }
+        
+            try {
+                const response = await fetch('/api/translate_text', {
+                    method: 'POST',  // Ensure that it's using the POST method
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text, target_language: targetLanguage })
+                });
+        
+                const result = await response.json();
+                if (result.translated_text) {
+                    document.getElementById("translatedText").innerText = result.translated_text;
+                } else {
+                    document.getElementById("translatedText").innerText = result.error || "Error during translation.";
+                }
+            } catch (error) {
+                document.getElementById("translatedText").innerText = "An error occurred while connecting to the server.";
+                console.error("Error:", error);
+            }
+        });
+    </script>
+</body>
+</html>
